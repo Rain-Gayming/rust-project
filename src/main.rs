@@ -51,7 +51,7 @@ fn start(
     ));
 
     commands.spawn(ItemInfo{
-        item_name: "basic sword".to_string()    ,
+        item_name: "basic sword".to_string(),
         item_type: item_types::weapon
     });
 }
