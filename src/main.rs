@@ -68,7 +68,7 @@ fn get_player_data(
     mut data: Query<&mut Player, With<Player>>
 ){
     for mut data in data.iter_mut(){
-        if data.has_been_checked == false{
+        if data.has_been_checked == false{      
             println!("Data found");
             println!("level: {}", data.level);
             data.has_been_checked = true;
