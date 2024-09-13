@@ -1,4 +1,7 @@
-use bevy::{ecs::{query, system::SystemState}, prelude::*};
+use bevy::{ecs::{query, system::SystemState}, prelude::*, transform};
+
+mod player;
+
 
 #[derive(Component)]
 struct MyCameraMarker;
@@ -7,7 +10,7 @@ struct MyCameraMarker;
 struct KeyboardMovable;
 
 #[derive(Component)]
-struct Entity{
+struct EntityValues{
     speed: f32,
 }
 
@@ -17,7 +20,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         
         //startups
-        .add_systems(Startup, (setup_camera, setup_sprite))
+        .add_systems(Startup, (setup_camera, setup_player))
 
         //updates
         .add_systems(Update, update)
@@ -48,7 +51,7 @@ fn setup_camera(mut commands: Commands) {
     ));
 }
 
-fn setup_sprite(
+fn setup_player(
     mut commands: Commands, 
     asset_server: Res<AssetServer>
 )
@@ -60,28 +63,22 @@ fn setup_sprite(
             ..default()
         },
         KeyboardMovable,
-        Entity{
+        EntityValues{
             speed: 15.0,
         }
     ));
 }
 
 fn move_player(
-    mut query: Query<&mut Transform, With<KeyboardMovable>>,
-    mut query_entity : Query<&mut Entity, With<Entity>>,
+    mut query: Query<(&mut Transform, &mut EntityValues), With<KeyboardMovable>>,
     keys: Res<ButtonInput<KeyCode>>,
-) 
-{
-    let entity_values = query_entity.single_mut();
-    
-    if keys.just_pressed(KeyCode::KeyA){
-        for mut transform in &mut query {
+) {
+    for (mut transform, entity_values) in query.iter_mut() {
+        if keys.just_pressed(KeyCode::KeyA) {
             transform.translation.x -= entity_values.speed;
         }
-    }
-    if keys.just_pressed(KeyCode::KeyD){
-        for mut transform in &mut query {
+        if keys.just_pressed(KeyCode::KeyD) {
             transform.translation.x += entity_values.speed;
         }
     }
-}
+} 
