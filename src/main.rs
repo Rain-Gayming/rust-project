@@ -1,10 +1,15 @@
-use bevy::{ecs::system::SystemState, prelude::*};
+use bevy::{ecs::{query, system::SystemState}, prelude::*};
 
 #[derive(Component)]
 struct MyCameraMarker;
 
 #[derive(Component)]
 struct KeyboardMovable;
+
+#[derive(Component)]
+struct Entity{
+    speed: f32,
+}
 
 fn main() {   
     App::new()
@@ -51,21 +56,32 @@ fn setup_sprite(
     commands.spawn((
         SpriteBundle{
             texture: asset_server.load("test_sprite.png"),
-            transform: Transform::from_scale(Vec3::splat(1.)).with_translation(Vec3::new(0., 0., 0.,)),
+            transform: Transform::from_scale(Vec3::splat(1.)).with_translation(Vec3::new(0., 150., 0.,)),
             ..default()
         },
-        KeyboardMovable
+        KeyboardMovable,
+        Entity{
+            speed: 15.0,
+        }
     ));
 }
 
 fn move_player(
     mut query: Query<&mut Transform, With<KeyboardMovable>>,
+    mut query_entity : Query<&mut Entity, With<Entity>>,
     keys: Res<ButtonInput<KeyCode>>,
 ) 
 {
+    let entity_values = query_entity.single_mut();
+    
     if keys.just_pressed(KeyCode::KeyA){
         for mut transform in &mut query {
-            transform.translation.x += 100.0;
+            transform.translation.x -= entity_values.speed;
+        }
+    }
+    if keys.just_pressed(KeyCode::KeyD){
+        for mut transform in &mut query {
+            transform.translation.x += entity_values.speed;
         }
     }
 }
