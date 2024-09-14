@@ -1,4 +1,4 @@
-use bevy::{ecs::{query, system::SystemState}, prelude::*, transform};
+use bevy::{ecs::{query, system::SystemState}, prelude::*, transform::{self, commands}};
 use avian2d::{math::*, prelude::*};
 use bevy_asset_loader::prelude::*;
 
@@ -25,7 +25,7 @@ fn main() {
 
 
         //startups
-        .add_systems(Startup, (setup_camera, setup_player))
+        .add_systems(Startup, (setup_camera, setup_player, spawn_floor))
 
         //updates
         .add_systems(Update, update)
@@ -48,6 +48,19 @@ fn main() {
         .add_systems(OnEnter(MyStates::Next), start_background_audio)
 
         .run();
+}
+
+fn spawn_floor(
+    mut commands: Commands
+){
+    commands.spawn((
+        SpriteBundle{
+            transform: Transform::from_scale(Vec3::splat(1.)).with_translation(Vec3::new(0., 0., 0.,)),
+            ..default()
+        },
+        RigidBody::Static,
+        Collider::rectangle(1500.0, 1.5)
+    ));
 }
 
 

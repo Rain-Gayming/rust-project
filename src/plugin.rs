@@ -1,5 +1,5 @@
 use avian2d::{math::*, prelude::*};
-use bevy::{ecs::query::Has, prelude::*};
+use bevy::prelude::*;
 
 pub struct CharacterControllerPlugin;
 
@@ -29,8 +29,6 @@ impl Plugin for CharacterControllerPlugin {
 /// An event sent for a movement input action.
 #[derive(Event)]
 pub enum MovementAction {
-    Move(Scalar),
-    Jump,
 }
 
 /// A marker component indicating that an entity is using a character controller.
@@ -41,17 +39,12 @@ pub struct CharacterController;
 #[derive(Component)]
 #[component(storage = "SparseSet")]
 pub struct Grounded;
-/// The acceleration used for character movement.
-#[derive(Component)]
-pub struct MovementAcceleration(Scalar);
+/// The acceleration used for character movement.=
 
 /// The damping factor used for slowing down movement.
 #[derive(Component)]
 pub struct MovementDampingFactor(Scalar);
 
-/// The strength of a jump.
-#[derive(Component)]
-pub struct JumpImpulse(Scalar);
 
 /// The gravitational acceleration used for a character controller.
 #[derive(Component)]
@@ -72,38 +65,6 @@ pub struct CharacterControllerBundle {
     collider: Collider,
     ground_caster: ShapeCaster,
     gravity: ControllerGravity,
-    movement: MovementBundle,
-}
-
-/// A bundle that contains components for character movement.
-#[derive(Bundle)]
-pub struct MovementBundle {
-    acceleration: MovementAcceleration,
-    damping: MovementDampingFactor,
-    jump_impulse: JumpImpulse,
-    max_slope_angle: MaxSlopeAngle,
-}
-
-impl MovementBundle {
-    pub const fn new(
-        acceleration: Scalar,
-        damping: Scalar,
-        jump_impulse: Scalar,
-        max_slope_angle: Scalar,
-    ) -> Self {
-        Self {
-            acceleration: MovementAcceleration(acceleration),
-            damping: MovementDampingFactor(damping),
-            jump_impulse: JumpImpulse(jump_impulse),
-            max_slope_angle: MaxSlopeAngle(max_slope_angle),
-        }
-    }
-}
-
-impl Default for MovementBundle {
-    fn default() -> Self {
-        Self::new(30.0, 0.9, 7.0, PI * 0.45)
-    }
 }
 
 impl CharacterControllerBundle {
@@ -119,7 +80,6 @@ impl CharacterControllerBundle {
             ground_caster: ShapeCaster::new(caster_shape, Vector::ZERO, 0.0, Dir2::NEG_Y)
                 .with_max_time_of_impact(10.0),
             gravity: ControllerGravity(gravity),
-            movement: MovementBundle::default(),
         }
     }
 }

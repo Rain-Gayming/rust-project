@@ -28,7 +28,8 @@ pub fn setup_player(
         EntityValues{
             speed: 15.0,
         },
-        CharacterControllerBundle::new(Collider::capsule(12.5, 20.0), Vector::NEG_Y * 1500.0),
+        RigidBody::Dynamic,
+        Collider::capsule(0.5, 1.5)
     ));
 }
 
