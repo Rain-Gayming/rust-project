@@ -9,11 +9,8 @@ impl Plugin for CharacterControllerPlugin {
             .add_systems(
                 Update,
                 (
-                    keyboard_input,
-                    gamepad_input,
                     update_grounded,
                     apply_gravity,
-                    movement,
                     apply_movement_damping,
                 )
                     .chain(),
@@ -125,75 +122,7 @@ impl CharacterControllerBundle {
             movement: MovementBundle::default(),
         }
     }
-
-    pub fn with_movement(
-        mut self,
-        acceleration: Scalar,
-        damping: Scalar,
-        jump_impulse: Scalar,
-        max_slope_angle: Scalar,
-    ) -> Self {
-        self.movement = MovementBundle::new(acceleration, damping, jump_impulse, max_slope_angle);
-        self
-    }
 }
-
-/// Sends [`MovementAction`] events based on keyboard input.
-fn keyboard_input(
-    mut movement_event_writer: EventWriter<MovementAction>,
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-) {
-    let left = keyboard_input.any_pressed([KeyCode::KeyA, KeyCode::ArrowLeft]);
-    let right = keyboard_input.any_pressed([KeyCode::KeyD, KeyCode::ArrowRight]);
-
-    let mut horizontal = 0.0;
-    if left {
-        horizontal = -10.0;
-    }
-
-    if right {
-        horizontal = 10.0
-    }
-
-    let direction = horizontal;
-
-    if direction != 0.0 {
-        movement_event_writer.send(MovementAction::Move(direction));
-    }
-
-    if keyboard_input.just_pressed(KeyCode::Space) {
-        movement_event_writer.send(MovementAction::Jump);
-    }
-}
-
-/// Sends [`MovementAction`] events based on gamepad input.
-fn gamepad_input(
-    mut movement_event_writer: EventWriter<MovementAction>,
-    gamepads: Res<Gamepads>,
-    axes: Res<Axis<GamepadAxis>>,
-    buttons: Res<ButtonInput<GamepadButton>>,
-) {
-    for gamepad in gamepads.iter() {
-        let axis_lx = GamepadAxis {
-            gamepad,
-            axis_type: GamepadAxisType::LeftStickX,
-        };
-
-        if let Some(x) = axes.get(axis_lx) {
-            movement_event_writer.send(MovementAction::Move(x as Scalar));
-        }
-
-        let jump_button = GamepadButton {
-            gamepad,
-            button_type: GamepadButtonType::South,
-        };
-
-        if buttons.just_pressed(jump_button) {
-            movement_event_writer.send(MovementAction::Jump);
-        }
-    }
-}
-
 /// Updates the [`Grounded`] status for character controllers.
 fn update_grounded(
     mut commands: Commands,
@@ -217,39 +146,6 @@ fn update_grounded(
             commands.entity(entity).insert(Grounded);
         } else {
             commands.entity(entity).remove::<Grounded>();
-        }
-    }
-}
-
-/// Responds to [`MovementAction`] events and moves character controllers accordingly.
-fn movement(
-    time: Res<Time>,
-    mut movement_event_reader: EventReader<MovementAction>,
-    mut controllers: Query<(
-        &MovementAcceleration,
-        &JumpImpulse,
-        &mut LinearVelocity,
-        Has<Grounded>,
-    )>,
-) {
-    // Precision is adjusted so that the example works with
-    // both the `f32` and `f64` features. Otherwise you don't need this.
-    let delta_time = time.delta_seconds_f64().adjust_precision();
-
-    for event in movement_event_reader.read() {
-        for (movement_acceleration, jump_impulse, mut linear_velocity, is_grounded) in
-            &mut controllers
-        {
-            match event {
-                MovementAction::Move(direction) => {
-                    linear_velocity.x += *direction * movement_acceleration.0 * delta_time;
-                }
-                MovementAction::Jump => {
-                    if is_grounded {
-                        linear_velocity.y = jump_impulse.0;
-                    }
-                }
-            }
         }
     }
 }

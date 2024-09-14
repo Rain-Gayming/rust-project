@@ -18,6 +18,12 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(PhysicsPlugins::default())
         
+
+        //resources
+        .insert_resource(KeyboardInputs{..default()})
+        .insert_resource(Gravity(Vector::NEG_Y * 1000.0))
+
+
         //startups
         .add_systems(Startup, (setup_camera, setup_player))
 
@@ -31,9 +37,6 @@ fn main() {
                 keyboard_input,
             )
         )
-
-        //resources
-        .insert_resource(Gravity(Vector::NEG_Y * 1000.0))
 
         //asset loader
         .init_state::<MyStates>()

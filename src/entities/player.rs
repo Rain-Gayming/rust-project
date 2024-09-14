@@ -7,7 +7,7 @@ use super::entities::*;
 use crate::plugin;
 use plugin::*;
 
-#[derive(Component, Default)]
+#[derive(Resource, Default)]
 pub struct KeyboardInputs{
     pub left: bool,
     pub right: bool,
@@ -25,9 +25,6 @@ pub fn setup_player(
             ..default()
         },
         KeyboardMovable,
-        KeyboardInputs{
-            ..default()
-        }, 
         EntityValues{
             speed: 15.0,
         },
@@ -36,9 +33,10 @@ pub fn setup_player(
 }
 
 pub fn move_player(
-    mut query: Query<(&mut Transform, &mut EntityValues, &mut KeyboardInputs), With<KeyboardMovable>>,
+    mut query: Query<(&mut Transform, &mut EntityValues), With<KeyboardMovable>>,
+    keyboard_inputs: Res<KeyboardInputs>,
 ) {
-    for (mut transform, entity_values, keyboard_inputs) in query.iter_mut() {
+    for (mut transform, entity_values) in query.iter_mut() {
         if keyboard_inputs.left {
             transform.translation.x -= entity_values.speed;
         }
@@ -49,24 +47,19 @@ pub fn move_player(
 } 
 
 pub fn keyboard_input(
-    mut query: Query<(&mut KeyboardInputs)>,
+    mut keyboard_inputs: ResMut<KeyboardInputs>,
     keys: Res<ButtonInput<KeyCode>>,
 ){
 
-    for mut keyboard_inputs in query.iter_mut() {
-        
-        if keys.pressed(KeyCode::KeyA) {
-            keyboard_inputs.left = true;
-        }else{
-            keyboard_inputs.left = false;
-        }
-
-
-        if keys.pressed(KeyCode::KeyD) {
-            keyboard_inputs.right = true;
-        }else{
-            keyboard_inputs.right = false;
-        }
+    if keys.pressed(KeyCode::KeyA) {
+         keyboard_inputs.left = true;
+    }else{
+        keyboard_inputs.left = false;
     }
 
+    if keys.pressed(KeyCode::KeyD) {
+        keyboard_inputs.right = true;
+    }else{
+        keyboard_inputs.right = false;
+    }
 }
