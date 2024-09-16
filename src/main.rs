@@ -6,6 +6,7 @@ use entities::player::*;
 mod physics;
 use physics::*;
 use physics_manager::physics_query;
+use collisions::*;
 
 
 
@@ -27,7 +28,9 @@ fn main() {
 
         //updates
         .add_systems(Update, update)
-        .add_systems(Update, physics_query)
+        
+        //physics
+        .add_systems(Update, (physics_query, collision_query))
 
         //player
         .add_systems(Update, 
@@ -47,6 +50,11 @@ fn spawn_floor(
         SpriteBundle{
             transform: Transform::from_scale(Vec3::splat(1.)).with_translation(Vec3::new(0., 0., 0.,)),
             ..default()
+        },
+        Collider{
+            size_x: 1500.0,
+            size_y: 1500.0,
+            collider_type: ColliderType::Cube
         }
     ));
 }

@@ -1,8 +1,10 @@
-use bevy::{prelude::*};
+use bevy::{math::vec2, prelude::*};
 use physics_manager::PhysicsEntity;
 
 use crate::physics;
+use collisions::{Collider, ColliderType};
 use physics::*;
+
 
 use super::entities::*;
 
@@ -32,8 +34,14 @@ pub fn setup_player(
             is_grounded: false,
         },
         PhysicsEntity{
-            weight: 1.0,
-            do_physics: true
+            weight: 0.1,
+            do_physics: true,
+            velocity: vec2(0., 0.)
+        },
+        Collider{
+            size_x: 0.75,
+            size_y: 1.5,
+            collider_type: ColliderType::Cube,
         }
     ));
 }  
@@ -61,21 +69,9 @@ pub fn keyboard_input(
     keys: Res<ButtonInput<KeyCode>>,
 ){
 
-    if keys.pressed(KeyCode::KeyA) {
-         keyboard_inputs.left = true;
-    }else{
-        keyboard_inputs.left = false;
-    }
+    keyboard_inputs.left = keys.pressed(KeyCode::KeyA);
 
-    if keys.pressed(KeyCode::KeyD) {
-        keyboard_inputs.right = true;
-    }else{
-        keyboard_inputs.right = false;
-    }
+    keyboard_inputs.right = keys.pressed(KeyCode::KeyD);
 
-    if keys.just_pressed(KeyCode::Space) {
-        keyboard_inputs.jump = true;
-    }else{
-        keyboard_inputs.jump = false;
-    }
+    keyboard_inputs.jump = keys.just_pressed(KeyCode::Space);
 }
