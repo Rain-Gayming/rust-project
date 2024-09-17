@@ -41,11 +41,9 @@ pub fn collision_query(
                 e_transform.translation.y -= y_offset;
                 e_transform.translation.x -= x_offset;
 
-                e_physics.do_gravity = false;
                 entity_values.is_grounded = true;
                 
             }else{
-                e_physics.do_gravity = true;
                 entity_values.is_grounded = false;
             }
         }
