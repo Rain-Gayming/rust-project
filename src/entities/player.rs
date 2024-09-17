@@ -30,11 +30,11 @@ pub fn setup_player(
         KeyboardMovable,
         EntityValues{
             speed: 5.0,
-            jump_height: 5.0,
+            jump_height: 25.0,
             is_grounded: false,
         },
         PhysicsEntity{
-            weight: 0.75,
+            weight: 1.,
             velocity: vec2(0., 0.)
         },
         Collider{

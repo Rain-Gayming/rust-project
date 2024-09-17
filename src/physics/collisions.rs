@@ -27,6 +27,8 @@ pub fn collision_query(
     for (mut e_transform, e_collider, mut e_physics, mut entity_values) in entity_query.iter_mut(){
         for (t_tranform, t_collider) in terrain_query.iter_mut(){
             
+            //set collision location
+
             
             //vertical collision
             if e_transform.translation.y < t_tranform.translation.y + t_collider.size_y
@@ -42,6 +44,7 @@ pub fn collision_query(
                 e_transform.translation.x -= x_offset;
 
                 entity_values.is_grounded = true;
+                println!("hit a collider");
                 
             }else{
                 entity_values.is_grounded = false;
