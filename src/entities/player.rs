@@ -30,12 +30,13 @@ pub fn setup_player(
         KeyboardMovable,
         EntityValues{
             speed: 5.0,
-            jump_height: 350.0,
+            jump_height: 3500.0,
             is_grounded: false,
         },
         PhysicsEntity{
             weight: 0.1,
             do_physics: true,
+            do_gravity: true,
             velocity: vec2(0., 0.)
         },
         Collider{
@@ -46,10 +47,10 @@ pub fn setup_player(
     ));
 }  
 pub fn move_player(
-    mut query: Query<(&mut Transform, &mut EntityValues), With<KeyboardMovable>>,
-    mut keyboard_inputs: ResMut<KeyboardInputs>,
+    mut query: Query<(&mut Transform, &mut EntityValues, &mut PhysicsEntity), With<KeyboardMovable>>,
+    keyboard_inputs: ResMut<KeyboardInputs>,
 ) {
-    for (mut transform, entity_values) in query.iter_mut() {
+    for (mut transform, entity_values, mut physics) in query.iter_mut() {
         if keyboard_inputs.left {
             transform.translation.x -= entity_values.speed;
         }
@@ -57,9 +58,10 @@ pub fn move_player(
             transform.translation.x += entity_values.speed;
         }
 
-        if keyboard_inputs.jump{
+        if keyboard_inputs.jump && entity_values.is_grounded{
             //jump
-            keyboard_inputs.jump = false
+            physics.velocity.y += entity_values.jump_height;
+            println!("jumping");
         }
     }
 } 

@@ -44,16 +44,18 @@ fn main() {
 }
 
 fn spawn_floor(
-    mut commands: Commands
+    mut commands: Commands,
+    asset_server: Res<AssetServer>
 ){
     commands.spawn((
         SpriteBundle{
+            texture: asset_server.load("grass.png"),
             transform: Transform::from_scale(Vec3::splat(1.)).with_translation(Vec3::new(0., 0., 0.,)),
             ..default()
         },
         Collider{
-            size_x: 1500.0,
-            size_y: 1500.0,
+            size_x: 32.,
+            size_y: 32.,
             collider_type: ColliderType::Cube
         }
     ));

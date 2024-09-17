@@ -1,7 +1,10 @@
 use bevy::prelude::*;
+use std::fmt;
 
 use crate::entities::{self, entities::EntityValues};
 use entities::*;
+
+use super::physics_manager::PhysicsEntity;
 
 #[derive(Component)]
 pub struct Collider{
@@ -17,18 +20,33 @@ pub enum ColliderType{
 }
 
 pub fn collision_query(
-    mut entity_query: Query<(&mut Transform, &mut Collider), With<EntityValues>>,
+    mut entity_query: Query<(&mut Transform, &mut Collider, &mut PhysicsEntity, &mut EntityValues), With<EntityValues>>,
     mut terrain_query: Query<(&mut Transform, &mut Collider), Without<EntityValues>>
 ){
-    for (e_tranform, e_collider) in entity_query.iter_mut(){
+    //checks for each entity and terrain collider
+    for (mut e_transform, e_collider, mut e_physics, mut entity_values) in entity_query.iter_mut(){
         for (t_tranform, t_collider) in terrain_query.iter_mut(){
-            if 
-                   e_tranform.translation.x < t_tranform.translation.x + t_collider.size_x
-                && e_tranform.translation.x  + e_collider.size_x > t_tranform.translation.x
-                && e_tranform.translation.y < t_tranform.translation.y + t_collider.size_y
-                && e_tranform.translation.y + t_collider.size_y > t_tranform.translation.y
+            
+            
+            //vertical collision
+            if e_transform.translation.y < t_tranform.translation.y + t_collider.size_y
+            && e_transform.translation.y + e_collider.size_y > t_tranform.translation.y
+            && e_transform.translation.x < t_tranform.translation.x + t_collider.size_x
+            && e_transform.translation.x  + e_collider.size_x > t_tranform.translation.x
             {
-                println!("collision detected");
+                // gets the difference in x and y positions
+                let x_offset = e_transform.translation.x - t_tranform.translation.x;
+                let y_offset = e_transform.translation.y + t_tranform.translation.y;
+
+                e_transform.translation.y -= y_offset;
+                e_transform.translation.x -= x_offset;
+
+                e_physics.do_gravity = false;
+                entity_values.is_grounded = true;
+                
+            }else{
+                e_physics.do_gravity = true;
+                entity_values.is_grounded = false;
             }
         }
     }
