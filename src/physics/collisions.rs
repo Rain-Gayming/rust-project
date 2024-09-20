@@ -9,6 +9,7 @@ pub struct Collider {
     pub size_x: f32,
     pub size_y: f32,
     pub collider_type: ColliderType,
+    pub is_debug: bool,
 }
 
 #[derive(PartialEq)]
@@ -16,6 +17,19 @@ pub enum ColliderType {
     None,
     Cube,
     _OneSided,
+}
+
+pub fn collider_debug(
+    mut collider_query: Query<(&mut Transform, &mut Collider)>,
+    mut commands: Commands,
+) {
+    for (transform, collider) in collider_query.iter_mut() {
+        commands.spawn(SpriteBundle {
+            //top left
+            transform: Transform::from_xyz(-transform.translation.x, transform.translation.y, 1.),
+            ..default()
+        });
+    }
 }
 
 pub fn collision_query(
@@ -50,7 +64,6 @@ pub fn collision_query(
                     e_transform.translation.x -= x_offset;
 
                     entity_values.is_grounded = true;
-                    println!("hit a collider");
                 } else {
                     entity_values.is_grounded = false;
                 }

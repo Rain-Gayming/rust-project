@@ -14,6 +14,8 @@ use collisions::*;
 use physics::*;
 use physics_manager::physics_query;
 
+use iyes_perf_ui::prelude::*;
+
 #[derive(Component)]
 struct MyCameraMarker;
 
@@ -24,7 +26,10 @@ fn main() {
         //resources
         .insert_resource(KeyboardInputs { ..default() })
         //startups
-        .add_systems(Startup, (setup_camera, setup_player, spawn_floor))
+        .add_systems(
+            Startup,
+            (setup_camera, setup_player, spawn_floor, spawn_fps_count),
+        )
         //updates
         .add_systems(Update, update)
         //physics
@@ -46,8 +51,13 @@ fn spawn_floor(mut commands: Commands, asset_server: Res<AssetServer>) {
             size_x: 32.,
             size_y: 32.,
             collider_type: ColliderType::Cube,
+            is_debug: true,
         },
     ));
+}
+
+fn spawn_fps_count(mut commands: Commands) {
+    commands.spawn((PerfUiRoot::default(), PerfUiEntryFPS::default()));
 }
 
 fn update() {}

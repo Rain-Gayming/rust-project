@@ -1,5 +1,5 @@
-use bevy::{a11y::accesskit::Vec2, math::vec2, prelude::*};
-use physics_manager::PhysicsEntity;
+use bevy::{math::vec2, prelude::*, reflect::hash_error};
+use physics_manager::{add_force, PhysicsEntity};
 
 use crate::physics;
 use collisions::{Collider, ColliderType};
@@ -26,17 +26,19 @@ pub fn setup_player(mut commands: Commands, asset_server: Res<AssetServer>) {
         KeyboardMovable,
         EntityValues {
             speed: 5.0,
-            jump_height: 25.0,
+            jump_height: 30.0,
             is_grounded: false,
         },
         PhysicsEntity {
             weight: 1.,
             velocity: vec2(0., 0.),
+            ..default()
         },
         Collider {
             size_x: 0.75,
             size_y: 1.5,
             collider_type: ColliderType::Cube,
+            is_debug: true,
         },
     ));
 }
@@ -47,7 +49,7 @@ pub fn move_player(
     >,
     keyboard_inputs: ResMut<KeyboardInputs>,
 ) {
-    for (mut transform, mut entity_values, mut physics) in query.iter_mut() {
+    for (mut transform, mut entity_values, mut physics_entity) in query.iter_mut() {
         if keyboard_inputs.left {
             transform.translation.x -= entity_values.speed;
         }
@@ -57,14 +59,22 @@ pub fn move_player(
 
         if keyboard_inputs.jump && entity_values.is_grounded {
             //jump
-            entity_values.is_grounded = false;
-            physics.velocity.y += entity_values.jump_height;
-            println!("jumping");
+            //physics_entity.has_external_forces = true;
+            physics_entity.start_fall_point = transform.translation.y;
+            //physics_entity.velocity.y += entity_values.jump_height;
+
+            add_force(vec2(0., entity_values.jump_height), physics_entity);
         }
 
         if keyboard_inputs.stuck {
             transform.translation = Vec3::new(0., 15., 0.);
-            physics.velocity = vec2(0., 0.);
+            physics_entity.velocity = vec2(0., 0.);
+        }
+
+        //if the player has reached the top of their jump start applying gravity.
+        if transform.translation.y >= (physics_entity.start_fall_point + entity_values.jump_height)
+        {
+            physics_entity.has_external_forces = false;
         }
     }
 }
