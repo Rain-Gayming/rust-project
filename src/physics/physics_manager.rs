@@ -16,6 +16,9 @@ pub fn physics_query(
 ) {
     //TODO: accelerate the gravity
     for (mut transform, mut physics_entity, entity_values) in query.iter_mut() {
+        transform.translation.y += physics_entity.velocity.y;
+        transform.translation.x += physics_entity.velocity.x;
+
         let gravity;
 
         if !entity_values.is_grounded && !physics_entity.has_external_forces {
@@ -26,14 +29,12 @@ pub fn physics_query(
 
         physics_entity.velocity.y += (gravity * time.delta_seconds()) * 15.;
 
-        transform.translation.y += physics_entity.velocity.y;
-        transform.translation.x += physics_entity.velocity.x;
     }
 }
 
-pub fn add_force(force: Vec2, mut entity: PhysicsEntity) {
-    entity.velocity += force;
+pub fn add_force(force: Vec2, entity: &mut PhysicsEntity) {
     entity.has_external_forces = true;
+    entity.velocity += force;
 
     println!("x: {}, y: {}", entity.velocity.x, entity.velocity.y);
 }

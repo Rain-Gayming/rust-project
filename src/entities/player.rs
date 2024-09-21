@@ -26,7 +26,7 @@ pub fn setup_player(mut commands: Commands, asset_server: Res<AssetServer>) {
         KeyboardMovable,
         EntityValues {
             speed: 5.0,
-            jump_height: 30.0,
+            jump_height: 60.0,
             is_grounded: false,
         },
         PhysicsEntity {
@@ -63,7 +63,7 @@ pub fn move_player(
             physics_entity.start_fall_point = transform.translation.y;
             //physics_entity.velocity.y += entity_values.jump_height;
 
-            add_force(vec2(0., entity_values.jump_height), physics_entity);
+            add_force(vec2(0., entity_values.jump_height), physics_entity.as_mut());
         }
 
         if keyboard_inputs.stuck {
