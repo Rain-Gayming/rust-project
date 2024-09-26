@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::entities::{self, entities::EntityValues};
+use crate::entities::entities::EntityValues;
 
 #[derive(Component, Default)]
 pub struct PhysicsEntity {
@@ -14,12 +14,13 @@ pub fn physics_query(
     time: Res<Time>,
     mut query: Query<(&mut Transform, &mut PhysicsEntity, &mut EntityValues)>,
 ) {
-    //TODO: accelerate the gravity
+    //TODO: accelerate the gravitiy
+    //positive forces less than 60 dont seem to be applied
     for (mut transform, mut physics_entity, entity_values) in query.iter_mut() {
         transform.translation.y += physics_entity.velocity.y;
         transform.translation.x += physics_entity.velocity.x;
 
-        let gravity;
+        /*let gravity;
 
         if !entity_values.is_grounded && !physics_entity.has_external_forces {
             gravity = -9.81 * physics_entity.weight;
@@ -27,8 +28,8 @@ pub fn physics_query(
             gravity = 0.;
         }
 
-        physics_entity.velocity.y += (gravity * time.delta_seconds()) * 15.;
-
+        physics_entity.velocity.y += gravity * time.delta_seconds()
+        */
     }
 }
 

@@ -1,4 +1,4 @@
-use bevy::{math::vec2, prelude::*, reflect::hash_error};
+use bevy::{math::vec2, prelude::*};
 use physics_manager::{add_force, PhysicsEntity};
 
 use crate::physics;
@@ -11,6 +11,8 @@ use super::entities::*;
 pub struct KeyboardInputs {
     pub left: bool,
     pub right: bool,
+    pub up: bool,
+    pub down: bool,
     pub jump: bool,
     pub stuck: bool,
 }
@@ -35,8 +37,8 @@ pub fn setup_player(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         Collider {
-            size_x: 0.75,
-            size_y: 1.5,
+            size_x: 4.85,
+            size_y: 8.0,
             collider_type: ColliderType::Cube,
             is_debug: true,
         },
@@ -49,25 +51,29 @@ pub fn move_player(
     >,
     keyboard_inputs: ResMut<KeyboardInputs>,
 ) {
-    for (mut transform, mut entity_values, mut physics_entity) in query.iter_mut() {
+    for (mut transform, entity_values, mut physics_entity) in query.iter_mut() {
         if keyboard_inputs.left {
             transform.translation.x -= entity_values.speed;
         }
         if keyboard_inputs.right {
             transform.translation.x += entity_values.speed;
         }
+        if keyboard_inputs.up {
+            transform.translation.y += entity_values.speed;
+        }
+        if keyboard_inputs.down {
+            transform.translation.y -= entity_values.speed;
+        }
 
         if keyboard_inputs.jump && entity_values.is_grounded {
             //jump
-            //physics_entity.has_external_forces = true;
             physics_entity.start_fall_point = transform.translation.y;
-            //physics_entity.velocity.y += entity_values.jump_height;
-
             add_force(vec2(0., entity_values.jump_height), physics_entity.as_mut());
         }
 
+        //makes it so the player returns to the start incase of falling too far or getting stuck
         if keyboard_inputs.stuck {
-            transform.translation = Vec3::new(0., 15., 0.);
+            transform.translation = Vec3::new(0., 30., 0.);
             physics_entity.velocity = vec2(0., 0.);
         }
 
@@ -84,8 +90,9 @@ pub fn keyboard_input(
     keys: Res<ButtonInput<KeyCode>>,
 ) {
     keyboard_inputs.left = keys.pressed(KeyCode::KeyA);
-
     keyboard_inputs.right = keys.pressed(KeyCode::KeyD);
+    keyboard_inputs.up = keys.pressed(KeyCode::KeyW);
+    keyboard_inputs.down = keys.pressed(KeyCode::KeyS);
 
     keyboard_inputs.jump = keys.just_pressed(KeyCode::Space);
 

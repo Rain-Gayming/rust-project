@@ -33,7 +33,7 @@ fn main() {
         //updates
         .add_systems(Update, update)
         //physics
-        .add_systems(FixedMain, (physics_query, collision_query))
+        .add_systems(FixedMain, (physics_query, collision_query, collider_debug))
         //player
         .add_systems(Update, (move_player, keyboard_input))
         .run();
@@ -42,7 +42,7 @@ fn main() {
 fn spawn_floor(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         SpriteBundle {
-            texture: asset_server.load("grass.png"),
+            //texture: asset_server.load("grass.png"),
             transform: Transform::from_scale(Vec3::splat(1.))
                 .with_translation(Vec3::new(0., 0., 0.)),
             ..default()
