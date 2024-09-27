@@ -33,7 +33,7 @@ fn main() {
         //updates
         .add_systems(Update, update)
         //physics
-        .add_systems(FixedMain, (physics_query, collision_query, collider_debug))
+        .add_systems(Update, (physics_query, collision_query, collider_debug))
         //player
         .add_systems(Update, (move_player, keyboard_input))
         .run();
