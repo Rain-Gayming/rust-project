@@ -20,16 +20,16 @@ pub fn physics_query(
         transform.translation.y += physics_entity.velocity.y;
         transform.translation.x += physics_entity.velocity.x;
 
-        /*let gravity;
+        let gravity;
 
         if !entity_values.is_grounded && !physics_entity.has_external_forces {
-            gravity = -9.81 * physics_entity.weight;
+            //gravity = -9.81 * physics_entity.weight;
+            gravity = 0.;
         } else {
             gravity = 0.;
         }
 
         physics_entity.velocity.y += gravity * time.delta_seconds()
-        */
     }
 }
 

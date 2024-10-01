@@ -1,10 +1,4 @@
-use bevy::{
-    app::FixedMain,
-    ecs::{query, system::SystemState},
-    prelude::*,
-    transform::{self, commands},
-    ui::update,
-};
+use bevy::prelude::*;
 
 mod entities;
 use entities::player::*;
@@ -42,7 +36,7 @@ fn main() {
 fn spawn_floor(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         SpriteBundle {
-            //texture: asset_server.load("grass.png"),
+            texture: asset_server.load("grass.png"),
             transform: Transform::from_scale(Vec3::splat(1.))
                 .with_translation(Vec3::new(0., 0., 0.)),
             ..default()
@@ -50,7 +44,7 @@ fn spawn_floor(mut commands: Commands, asset_server: Res<AssetServer>) {
         Collider {
             size_x: 32.,
             size_y: 32.,
-            collider_type: ColliderType::Cube,
+            collider_type: ColliderType::OneSided,
             is_debug: true,
         },
     ));
