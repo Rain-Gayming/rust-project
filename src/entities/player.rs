@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::collision::collider::*;
 use crate::physics::physics::*;
 use crate::KeyboardInputs;
 
@@ -19,6 +20,11 @@ pub fn player_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..default()
             },
             physics_entity: PhysicsInformation { ..default() },
+            collider: ColliderInfo {
+                size_y: 5.0,
+                size_x: 5.0,
+                is_debug: true,
+            },
         },
         Player,
     ));
