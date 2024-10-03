@@ -82,12 +82,16 @@ pub fn entity_to_terrain_detection(
 ) {
     for (entity, mut entity_transform) in entity_query.iter_mut() {
         for (terrain, mut terrain_transform) in terrain_query.iter_mut() {
+            //is the terrains left hitting the terrains right?
             if entity_transform.translation.x - entity.size_x
                 < terrain_transform.translation.x + terrain.size_x
+                //is the entities right hitting the terrains left?
                 && entity_transform.translation.x + entity.size_x
                     > terrain_transform.translation.x - terrain.size_x
+                //is the entities bottom hitting the terrains top?
                 && entity_transform.translation.y - entity.size_y
                     < terrain_transform.translation.y + terrain.size_y
+                //is the entities top hitting the terrains bottom?
                 && entity_transform.translation.y + entity.size_y
                     > terrain_transform.translation.y - terrain.size_y
             {
