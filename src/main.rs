@@ -37,8 +37,8 @@ fn spawn_floor(mut commands: Commands) {
             ..default()
         },
         ColliderInfo {
-            size_x: 20.,
-            size_y: 5.,
+            size_x: 50.,
+            size_y: 50.,
             is_debug: true,
         },
     ));

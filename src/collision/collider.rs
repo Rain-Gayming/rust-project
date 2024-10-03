@@ -95,15 +95,49 @@ pub fn entity_to_terrain_detection(
                 && entity_transform.translation.y + entity.size_y
                     > terrain_transform.translation.y - terrain.size_y
             {
-                //works only for collidingwith the top of the terrain
-                //make it so it checks which way youre colliding
-                let x_offset = entity_transform.translation.x + terrain_transform.translation.x;
-                let y_offset = entity_transform.translation.y + terrain_transform.translation.y;
+                //detect which side the player is closest to
+                //push the player away from that side
 
-                entity_transform.translation.x -= x_offset;
-                entity_transform.translation.y -= y_offset;
+                let x_offset = (entity_transform.translation.x
+                    - (terrain.size_x + terrain_transform.translation.x))
+                    + 50.;
+                let y_offset = (entity_transform.translation.y
+                    - (terrain.size_y + terrain_transform.translation.y))
+                    + 50.;
 
-                println!("collision detected");
+                println!("x {}", x_offset);
+                println!("y {}", y_offset);
+
+                if y_offset > 0. {
+                    if x_offset > 0. {
+                        println!("closer to the top right");
+                        entity_transform.translation.x += x_offset;
+                        return;
+                    } else if y_offset < 0. {
+                        println!("closer to the bottom right");
+                        entity_transform.translation.x += x_offset;
+
+                        return;
+                    }
+
+                    entity_transform.translation.y += y_offset;
+                    println!("closer to the top");
+                } else {
+                    if x_offset > 0. {
+                        println!("closer to the top left");
+                        entity_transform.translation.x += x_offset;
+
+                        return;
+                    } else if x_offset < 0. {
+                        println!("closer to the bottom left");
+                        entity_transform.translation.x += x_offset;
+
+                        return;
+                    }
+
+                    println!("closer to the bottom");
+                    entity_transform.translation.y += y_offset;
+                }
             }
         }
     }
