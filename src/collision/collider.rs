@@ -98,45 +98,38 @@ pub fn entity_to_terrain_detection(
                 //detect which side the player is closest to
                 //push the player away from that side
 
+                //top left
+                //bottom right
+
                 let x_offset = (entity_transform.translation.x
                     - (terrain.size_x + terrain_transform.translation.x))
-                    + 50.;
+                    + (terrain.size_x * 2.);
                 let y_offset = (entity_transform.translation.y
                     - (terrain.size_y + terrain_transform.translation.y))
-                    + 50.;
+                    + (terrain.size_y * 2.);
 
                 println!("x {}", x_offset);
                 println!("y {}", y_offset);
-
+                //if the entity is on the left side and is on the top
+                if x_offset >= 0.0 && x_offset >= y_offset && y_offset != 0. {
+                    println!("on the top of the right side");
+                    entity_transform.translation.x += terrain.size_x;
+                    return;
+                }
+                //if the entity is closer to the left than the top
+                if x_offset <= 0.1 && x_offset <= y_offset && y_offset != 0. {
+                    println!("on the top of the left side");
+                    entity_transform.translation.x -= terrain.size_x;
+                    return;
+                }
+                //if the entity is closer to the top than the right
+                println!("pushing to the top");
                 if y_offset > 0. {
-                    if x_offset > 0. {
-                        println!("closer to the top right");
-                        entity_transform.translation.x += x_offset;
-                        return;
-                    } else if y_offset < 0. {
-                        println!("closer to the bottom right");
-                        entity_transform.translation.x += x_offset;
-
-                        return;
-                    }
-
-                    entity_transform.translation.y += y_offset;
-                    println!("closer to the top");
+                    entity_transform.translation.y += terrain.size_y;
+                    return;
                 } else {
-                    if x_offset > 0. {
-                        println!("closer to the top left");
-                        entity_transform.translation.x += x_offset;
-
-                        return;
-                    } else if x_offset < 0. {
-                        println!("closer to the bottom left");
-                        entity_transform.translation.x += x_offset;
-
-                        return;
-                    }
-
-                    println!("closer to the bottom");
-                    entity_transform.translation.y += y_offset;
+                    entity_transform.translation.y -= terrain.size_y;
+                    return;
                 }
             }
         }
